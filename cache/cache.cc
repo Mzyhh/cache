@@ -20,5 +20,5 @@ int main(int argc, char *argv[]) {
         if (c.lookup_update(key, slow_get_page_int)) hits++;
     }
     
-    std::cout << hits / static_cast<double>(nelems) << std::endl;
+    std::cout << hits << std::endl;
 }
