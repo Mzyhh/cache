@@ -2,6 +2,7 @@
 
 #include <list>
 #include <unordered_map>
+#include <iostream>
 
 #include "base_cache.hpp"
 
@@ -14,8 +15,6 @@ public:
     lru_cache(const std::size_t size): cache<T, KeyT>(size) {}
 
     bool full() const { return cache_.size() == this->capacity_; }
-
-
     
     std::optional<T> get(const KeyT& key) {
         auto hit = hash_.find(key);
@@ -29,13 +28,14 @@ public:
         if (hit != hash_.end()) {
             hit->second->second = value; 
             cache_.splice(cache_.begin(), cache_, hit->second);
+        } else {
+            if (full()) {
+                hash_.erase(cache_.back().first);
+                cache_.pop_back();
+            }
+            cache_.emplace_front(key, value);
+            hash_.emplace(key, cache_.begin());
         }
-        if (full()) {
-            hash_.erase(cache_.back().first);
-            cache_.pop_back();
-        }
-        cache_.emplace_front(key, value);
-        hash_.emplace(key, cache_.begin());
     }
 
     template <typename F>
