@@ -1,14 +1,31 @@
 #include <list>
 #include <unordered_map>
 #include <tuple>
+#include <optional>
 
 
 namespace caches {
 
 template <typename T, typename KeyT = int>
+class cache {
+public:
+    cache(const std::size_t capacity): capacity_(capacity) {}
+
+    std::optional<T> get(const KeyT& key) const = 0;
+    void put(const KeyT& key, const T value) = 0;
+protected:
+    std::size_t capacity_;
+};
+
+template <typename T, typename KeyT = int>
+class fifo_cache {
+
+};
+
+template <typename T, typename KeyT = int>
 class lru_cache {
 public:
-    lru_cache(std::size_t size): cap_(size) {}
+    lru_cache(const std::size_t size): cap_(size) {}
 
     bool full() const { return cache_.size() == cap_;}
 
@@ -38,7 +55,7 @@ private:
 template <typename T, typename KeyT = int>
 class lfu_cache {
 public:
-    lfu_cache(std::size_t capacity): cap_(capacity), minFreq_(0) {}
+    lfu_cache(const std::size_t capacity): cap_(capacity), minFreq_(0) {}
     
     bool full() const { return cache_.size() == cap_;}
 
