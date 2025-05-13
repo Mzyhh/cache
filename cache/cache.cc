@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
     size_t cache_capacity{0};
     std::cin >> cache_capacity >> nelems;
     assert(std::cin.good());
-    caches::cache_t<int> c(cache_capacity);
+    caches::lfu_cache<int> c(cache_capacity);
     for (int i = 0; i < nelems; ++i) {
         int key{0};
         std::cin >> key;
