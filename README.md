@@ -7,7 +7,7 @@ doubly linked list. When list is full last node is evicted. So this algorithm
 does not consider both frequency and recency. To make all operation approximately
 O(1) we need also hash map storing pointers on elements in list.
 
-### LRU-cache (Least Frequently Used)
+### LRU-cache (Least Recently Used)
 
 This cache is an upgrade of first one. Here we use recency. New element is added
 in front of list as well as in FIFO-cache but operation `get` do one extra thing:
@@ -18,3 +18,10 @@ was successfully submitted on leetcode
 ([Problem 146](https://leetcode.com/problems/lru-cache/)). For this reason the 
 implementation is pretty reliable.
 
+### LFU-cache (Least Frequently Used)
+
+This cache is an upgrade of LRU. Here we look at frequency of elements when decide
+what to evict. This implementation is based on hash map of frequency -> list of elements
+and hash map of key -> element. Here might be some optimization in the future.
+
+Code is tested on leetcode ([Problem 460](https://leetcode.com/problems/lfu-cache/)).
