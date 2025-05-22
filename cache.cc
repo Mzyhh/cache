@@ -27,7 +27,6 @@ int main(int argc, char *argv[]) {
 //            std::cout << "Put element" << std::endl;
 //        }
     }
-    std::cout << c.cache_.size() << ' ' << c.hash_.size() << ' ' << c.freqMap_.size() << std::endl;
     
     std::cout << hits << std::endl;
 }
