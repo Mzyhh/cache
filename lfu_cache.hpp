@@ -19,8 +19,9 @@ public:
         auto it = hash_.find(key);
         if (it == hash_.end())
             return std::nullopt;
+        auto value = it->second->value;
         updateFrequency_(key); 
-        return it->second->value;
+        return value;
     }
 
     void put(const KeyT& key, const T& value) {
@@ -69,8 +70,8 @@ private:
         if (it == freqMap_[it->freq].first) {
             freqMap_[it->freq].first = std::next(freqMap_[it->freq].first); 
         }
-        cache_.erase(it);
         hash_.erase(it->key);
+        cache_.erase(it);
     }
 
     void remove_freqMap_tail_(std::size_t freq) {
@@ -85,13 +86,20 @@ private:
     }
 
     void update_minfreq_() {
+        if (freqMap_.empty())  {
+            minFreq_ = 0;
+            return;
+        }
         while (freqMap_.find(minFreq_) == freqMap_.end()) minFreq_++; 
     }
 
     void updateFrequency_(const KeyT& key)  {
-        auto [k, freq, value] = *hash_[key];
+        auto it = hash_.find(key);
+        if (it == hash_.end()) return;
+        auto [_, freq, value] = *(it->second);
         remove_(key);
-        add_(k, freq + 1, value); 
+        add_(key, freq + 1, value); 
+        update_minfreq_();
     }
 
     std::size_t minFreq_;
