@@ -2,7 +2,6 @@
 
 #include <list>
 #include <unordered_map>
-#include <iostream>
 
 #include "base_cache.hpp"
 

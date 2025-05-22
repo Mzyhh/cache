@@ -15,7 +15,7 @@ public:
 
     bool full() const override { return cache_.size() == this->capacity_; }
 
-    std::optional<T> get(const KeyT& key) const override {
+    std::optional<T> get(const KeyT& key) override {
         auto hit = hash_.find(key);
         if (hit == hash_.end()) return std::nullopt;
 
