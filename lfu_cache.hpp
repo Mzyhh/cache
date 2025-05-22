@@ -9,104 +9,76 @@
 namespace cache {
 
 template <typename T, typename KeyT = int>
-class lfu_cache: public cache<T, KeyT> {
-public:
+class lfu_cache: public cache<T, KeyT> { public:
     lfu_cache(const std::size_t capacity): cache<T, KeyT>(capacity), minFreq_(1) {}
     
     bool full() const { return cache_.size() >= this->capacity_;}
 
     std::optional<T> get(const KeyT& key) {
-        auto it = hash_.find(key);
-        if (it == hash_.end())
-            return std::nullopt;
-        auto value = it->second->value;
-        updateFrequency_(key); 
-        return value;
+        auto hit = cache_.find(key);
+        if (hit != cache_.end()) {
+            T value = std::get<2>(*hit->second);
+            update_(hit->second);
+            return value;
+        }
+        return std::nullopt;
     }
 
     void put(const KeyT& key, const T& value) {
-        auto it = hash_.find(key);
-        if (it != hash_.end()) {
-            it->second->value = value;  
-            updateFrequency_(key);
+        auto hit = cache_.find(key);
+        if (hit != cache_.end()) {
+            std::get<2>(*hit->second) = value;
+            update_(hit->second);
         } else {
             if (full()) {
-                remove_freqMap_tail_(minFreq_);
+                remove_last_();
             }
-            minFreq_ = 1;
-            add_(key, minFreq_, value);
+            add_new_(key, value);
         }
     }
 
 private:
-    struct Node {
-        KeyT key;
-        std::size_t freq;
-        T value;
+    using Node = std::tuple<KeyT, std::size_t, T>;
 
-        Node(const KeyT& key, const std::size_t freq, const T& value): key(key), freq(freq), value(value) {}
-    };
-    using ListIt = typename std::list<Node>::iterator;
-
-    void add_(KeyT key, std::size_t freq, T value){
-        if (freqMap_.find(freq) != freqMap_.end()) {
-            auto head = freqMap_[freq].first;
-            auto new_node = cache_.emplace(head, key, freq, value);
-            freqMap_[freq].first = new_node; 
-            hash_.emplace(key, new_node);
-        } else {
-            cache_.emplace_front(key, freq, value);  
-            hash_.emplace(key, cache_.begin());
-            freqMap_[freq] = {cache_.begin(), cache_.begin()};
-        }
+    int add_new_(const KeyT& key, const T& value) {
+        minFreq_ = 1;
+        if (freqMap_.find(minFreq_) == freqMap_.end())
+            freqMap_.emplace(minFreq_, std::list<Node>());
+        freqMap_[minFreq_].emplace_front(key, minFreq_, value);
+        cache_[key] = freqMap_[minFreq_].begin();
+        return 0;
     }
 
-    void remove_(const KeyT& key) {
-        auto it = hash_[key];
-        if (it == freqMap_[it->freq].second) { 
-            remove_freqMap_tail_(it->freq);
-            return;
+    int remove_last_() {
+        if (freqMap_.empty()) return -1;
+        auto& [key, freq, value] = freqMap_[minFreq_].back();
+        cache_.erase(key);
+        freqMap_[minFreq_].pop_back();
+        if (freqMap_[minFreq_].empty()) {
+            freqMap_.erase(minFreq_);
         }
-        if (it == freqMap_[it->freq].first) {
-            freqMap_[it->freq].first = std::next(freqMap_[it->freq].first); 
-        }
-        hash_.erase(it->key);
-        cache_.erase(it);
+        return 0;
     }
-
-    void remove_freqMap_tail_(std::size_t freq) {
-        auto& [head, tail] = freqMap_[freq];
-        if (head == tail) { 
+   
+    // `it` refers to element in `cache_`
+    int update_(typename std::list<Node>::iterator it) {
+        auto [key, freq, value] = *it;
+        freqMap_[freq].erase(it); 
+        if (freqMap_[freq].empty()) {
+            if (minFreq_ == freq) minFreq_++;
             freqMap_.erase(freq);
-            update_minfreq_();
         }
-        else freqMap_[freq].second = std::prev(freqMap_[freq].second);
-        hash_.erase(tail->key);
-        cache_.erase(tail);
-    }
-
-    void update_minfreq_() {
-        if (freqMap_.empty())  {
-            minFreq_ = 0;
-            return;
+        if (freqMap_.find(freq + 1) == freqMap_.end()) {
+            freqMap_.emplace(freq + 1, std::list<Node>());
         }
-        while (freqMap_.find(minFreq_) == freqMap_.end()) minFreq_++; 
-    }
-
-    void updateFrequency_(const KeyT& key)  {
-        auto it = hash_.find(key);
-        if (it == hash_.end()) return;
-        auto [_, freq, value] = *(it->second);
-        remove_(key);
-        add_(key, freq + 1, value); 
-        update_minfreq_();
+        freqMap_[freq + 1].emplace_front(key, freq + 1, value);
+        cache_[key] = freqMap_[freq + 1].begin();
+        return 0;
     }
 
     std::size_t minFreq_;
-    std::list<Node> cache_;
-    std::unordered_map<KeyT, ListIt> hash_;
-    // maps frequency to a pair of head and tail pointers
-    std::unordered_map<std::size_t, std::pair<ListIt, ListIt>> freqMap_;
+    std::unordered_map<KeyT, typename std::list<Node>::iterator> cache_;
+    std::unordered_map<std::size_t, std::list<Node>> freqMap_;
 };
 
 } // namespace cache
