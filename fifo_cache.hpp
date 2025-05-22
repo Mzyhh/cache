@@ -37,6 +37,13 @@ public:
         hash_.emplace(key, cache_.begin());
     }
 
+    std::optional<T> pop() {
+        if (cache_.empty()) return std::nullopt;
+        auto res = cache_.back().second;
+        cache_.pop_back();
+        return res;
+    }
+
 private:
     using ListIt = typename std::list<std::pair<KeyT, T>>::iterator;
     std::list<std::pair<KeyT, T>> cache_;
