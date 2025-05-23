@@ -37,11 +37,12 @@ public:
         hash_.emplace(key, cache_.begin());
     }
 
-    std::optional<T> pop() {
+    std::optional<std::pair<KeyT, T>> pop() {
         if (cache_.empty()) return std::nullopt;
-        auto res = cache_.back().second;
+        auto [key, res] = cache_.back();
         cache_.pop_back();
-        return res;
+        hash_.erase(key);
+        return std::pair<KeyT, T>{key, res};
     }
 
 private:
