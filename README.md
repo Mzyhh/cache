@@ -25,3 +25,8 @@ what to evict. This implementation is based on hash map of frequency -> list of 
 and hash map of key -> element. Here might be some optimization in the future.
 
 Code is tested on leetcode ([Problem 460](https://leetcode.com/problems/lfu-cache/)).
+
+### Benchmarking
+
+Data for benchmarking was took on [umass](https://traces.cs.umass.edu/docs/traces/) and
+[wiki](https://dumps.wikimedia.org/other/pagecounts-raw/).
