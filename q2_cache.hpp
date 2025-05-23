@@ -10,21 +10,28 @@ namespace cache {
 template<typename T, typename KeyT=int>
 class q2_cache : public cache<KeyT, T> {
 public:
+
+    /**
+    * Don't use capacity less then 5 (with default hot_part, in_part).
+    */
     q2_cache(const int capacity, const double hot_part=0.2, const double in_part=0.2):
         cache<KeyT, T>(capacity), hot(capacity * hot_part), in(capacity * in_part),
-        out(capacity - int(capacity * hot_part) - int(capacity * in_part)){
-    }
+        out(capacity - int(capacity * hot_part) - int(capacity * in_part)) {}
 
     bool full() const {
         return in.full() && out.full() && hot.full();
     }
 
     std::optional<T> get(const KeyT& key) {
-        auto v = hot.get(key); 
-        if (v) return v;
+        auto v = hot.get(key);
+        if (v) {
+            return v;
+        }
 
         v = in.get(key);
-        if (v) return v;
+        if (v) {
+            return v;
+        }
 
         v = out.get(key);
         if (v) {
@@ -40,18 +47,22 @@ public:
             hot.put(key, value); 
             return;
         }
+
         if (in.get(key)) {
             in.put(key, value);
             return;
         }
+
         if (out.get(key)) {
             hot.put(key, value);
             return;
         }
 
         if (in.full()) {
-            auto v = in.pop();
-            if (v) out.put(key, *v);
+            auto [k, v] = *in.pop();
+            out.put(k, v);
+            in.put(key, value);
+        } else {
             in.put(key, value);
         }
     }
