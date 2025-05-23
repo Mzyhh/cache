@@ -4,7 +4,7 @@
 
 
 namespace caches {
-template <typename T, typename KeyT = int>
+template <typename KeyT, typename T>
 class cache {
 public:
     cache(const std::size_t capacity): capacity_(capacity) {}
@@ -18,8 +18,8 @@ protected:
     std::size_t capacity_;
 };
 
-template <typename T, typename F, typename KeyT = int>
-bool lookup_update(cache<T, KeyT>* cache, const KeyT& key, F slow_get_page) {
+template <typename T, typename F, typename KeyT>
+bool lookup_update(cache<KeyT, T>* cache, const KeyT& key, F slow_get_page) {
     if (cache->get(key) != std::nullopt) return true;
     cache->put(key, slow_get_page(key));
     return false;

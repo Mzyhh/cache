@@ -7,15 +7,15 @@
 
 namespace caches {
 
-template<typename T, typename KeyT=int>
-class q2_cache : public cache<T, KeyT> {
+template<typename KeyT, typename T>
+class q2_cache : public cache<KeyT, T> {
 public:
 
     /**
     * Don't use capacity less then 5 (with default hot_part, in_part).
     */
     q2_cache(const std::size_t capacity, const double hot_part=0.2, const double in_part=0.2):
-        cache<T, KeyT>(capacity), hot(capacity * hot_part), in(capacity * in_part),
+        cache<KeyT, T>(capacity), hot(capacity * hot_part), in(capacity * in_part),
         out(capacity - int(capacity * hot_part) - int(capacity * in_part)) {}
 
     bool full() const {
@@ -67,8 +67,8 @@ public:
         }
     }
 private:
-    fifo_cache<T, KeyT> in, out;
-    lru_cache<T, KeyT> hot;
+    fifo_cache<KeyT, T> in, out;
+    lru_cache<KeyT, T> hot;
 };
 
 } // namespace cache

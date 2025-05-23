@@ -24,11 +24,11 @@ int main(int argc, char* argv[]) {
     cout << "Enter capacity of caches: \n";
     cin >> cap;
     const size_t ncaches = 4;
-    array<pair<cache<int, string>*, size_t>, ncaches> cs {
-        make_pair(new fifo_cache<int, string>(cap), 0),
-        make_pair(new lru_cache<int, string>(cap), 0),
-        make_pair(new lfu_cache<int, string>(cap), 0),
-        make_pair(new q2_cache<int, string>(cap), 0)
+    array<pair<cache<string, int>*, size_t>, ncaches> cs {
+        make_pair(new fifo_cache<string, int>(cap), 0),
+        make_pair(new lru_cache<string, int>(cap), 0),
+        make_pair(new lfu_cache<string, int>(cap), 0),
+        make_pair(new q2_cache<string, int>(cap), 0)
     };
     string key;
     size_t cnt = 0;

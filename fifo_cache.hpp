@@ -8,10 +8,10 @@
 
 namespace caches {
 
-template <typename T, typename KeyT = int>
-class fifo_cache : public cache<T, KeyT> {
+template <typename KeyT, typename T>
+class fifo_cache : public cache<KeyT, T> {
 public:
-    fifo_cache(const std::size_t capacity): cache<T, KeyT>(capacity) {}
+    fifo_cache(const std::size_t capacity): cache<KeyT, T>(capacity) {}
 
     bool full() const override { return cache_.size() == this->capacity_; }
 

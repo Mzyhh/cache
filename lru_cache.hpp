@@ -8,10 +8,10 @@
 
 namespace caches {
 
-template <typename T, typename KeyT = int>
-class lru_cache: public cache<T, KeyT>{
+template <typename KeyT, typename T>
+class lru_cache: public cache<KeyT, T>{
 public:
-    lru_cache(const std::size_t size): cache<T, KeyT>(size) {}
+    lru_cache(const std::size_t size): cache<KeyT, T>(size) {}
 
     bool full() const { return cache_.size() == this->capacity_; }
     
