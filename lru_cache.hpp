@@ -6,7 +6,7 @@
 #include "base_cache.hpp"
 
 
-namespace cache {
+namespace caches {
 
 template <typename T, typename KeyT = int>
 class lru_cache: public cache<T, KeyT>{

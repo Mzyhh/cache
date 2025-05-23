@@ -3,7 +3,7 @@
 #include <optional>
 
 
-namespace cache {
+namespace caches {
 template <typename T, typename KeyT = int>
 class cache {
 public:
@@ -19,9 +19,9 @@ protected:
 };
 
 template <typename T, typename F, typename KeyT = int>
-bool lookup_update(cache<KeyT, T>& cache, const KeyT& key, F slow_get_page) {
-    if (cache.get(key) != std::nullopt) return true;
-    cache.put(key, slow_get_page(key));
+bool lookup_update(cache<T, KeyT>* cache, const KeyT& key, F slow_get_page) {
+    if (cache->get(key) != std::nullopt) return true;
+    cache->put(key, slow_get_page(key));
     return false;
 }
 

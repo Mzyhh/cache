@@ -5,17 +5,17 @@
 #include "lru_cache.hpp"
 
 
-namespace cache {
+namespace caches {
 
 template<typename T, typename KeyT=int>
-class q2_cache : public cache<KeyT, T> {
+class q2_cache : public cache<T, KeyT> {
 public:
 
     /**
     * Don't use capacity less then 5 (with default hot_part, in_part).
     */
-    q2_cache(const int capacity, const double hot_part=0.2, const double in_part=0.2):
-        cache<KeyT, T>(capacity), hot(capacity * hot_part), in(capacity * in_part),
+    q2_cache(const std::size_t capacity, const double hot_part=0.2, const double in_part=0.2):
+        cache<T, KeyT>(capacity), hot(capacity * hot_part), in(capacity * in_part),
         out(capacity - int(capacity * hot_part) - int(capacity * in_part)) {}
 
     bool full() const {

@@ -6,10 +6,11 @@
 #include "base_cache.hpp"
 
 
-namespace cache {
+namespace caches {
 
 template <typename T, typename KeyT = int>
-class lfu_cache: public cache<T, KeyT> { public:
+class lfu_cache: public cache<T, KeyT> { 
+public:
     lfu_cache(const std::size_t capacity): cache<T, KeyT>(capacity), minFreq_(1) {}
     
     bool full() const { return cache_.size() >= this->capacity_;}
