@@ -11,6 +11,9 @@ public:
     virtual bool full() const = 0;
     virtual std::optional<T> get(const KeyT& key) = 0;
     virtual void put(const KeyT& key, const T& value) = 0;
+    std::size_t capacity() const noexcept {
+        return capacity_;
+    }
 protected:
     std::size_t capacity_;
 };
